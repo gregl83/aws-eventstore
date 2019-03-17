@@ -1,0 +1,25 @@
+{
+  "name": "aws-eventstore",
+  "version": "1.0.0",
+  "description": "AWS EventStore using GoLang",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gregl83/aws-eventstore.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gregl83/aws-eventstore/issues"
+  },
+  "homepage": "https://github.com/gregl83/aws-eventstore#readme",
+  "devDependencies": {
+    "serverless-domain-manager": "^2.6.10",
+    "serverless-offline": "^3.32.2",
+    "serverless-sam": "^0.2.0"
+  }
+}
