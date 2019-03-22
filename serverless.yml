@@ -53,12 +53,12 @@ package:
    - ./bin/**
 
 functions:
-  redirect:
-    handler: bin/eventstore
+  write:
+    handler: bin/write
     events:
       - http:
           path: /
-          method: get
+          method: post
 
 plugins:
   - serverless-sam
@@ -66,7 +66,7 @@ plugins:
 
 custom:
   customDomain:
-    domainName: gregl83.com
+    domainName: gregorylanglais.com
     stage: ${self:provider.stage}
     basePath: "*"
     createRoute53Record: true
