@@ -1,7 +1,7 @@
 package write
 
 import (
-	"context"
+	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -14,15 +14,10 @@ import (
 type Response events.APIGatewayProxyResponse
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(ctx context.Context) (Response, error) {
-	resp := Response{
-		StatusCode:      301,
-		Headers: map[string]string{
-			"Location": "http://example.com",
-		},
-	}
+func Handler(request events.APIGatewayProxyRequest) (Response, error) {
+	fmt.Println("Received body: ", request.Body)
 
-	return resp, nil
+	return Response{Body: request.Body, StatusCode: 200}, nil
 }
 
 func main() {

@@ -66,9 +66,9 @@ plugins:
 
 custom:
   customDomain:
-    domainName: gregorylanglais.com
+    domainName: protoblue.com
     stage: ${self:provider.stage}
-    basePath: "*"
+    basePath: "events"
     createRoute53Record: true
     endpointType: 'regional'
 
