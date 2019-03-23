@@ -15,7 +15,7 @@ type Response events.APIGatewayProxyResponse
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request events.APIGatewayProxyRequest) (Response, error) {
-	// todo write to event store
+	// todo read from event store
 
 	fmt.Println("Received body: ", request.Body)
 

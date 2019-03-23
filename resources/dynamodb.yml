@@ -1,0 +1,27 @@
+Resources:
+  Events:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.collections.events.name}
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: ${self:custom.collections.events.throughput}
+        WriteCapacityUnits: ${self:custom.collections.events.throughput}
+  EventSources:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.collections.eventSources.name}
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: ${self:custom.collections.eventSources.throughput}
+        WriteCapacityUnits: ${self:custom.collections.eventSources.throughput}
