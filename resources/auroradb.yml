@@ -1,0 +1,52 @@
+Resources:
+  AuroraSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Aurora RDS DB Cluster Subnet Group
+      SubnetIds:
+        - 
+  AuroraRDSClusterParameterGroup:
+    Type: AWS::RDS::DBClusterParameterGroup
+    Properties:
+      Description: Aurora RDS DB Cluster Parameter Group.
+      Family: aurora-mysql5.7
+      Parameters:
+        character_set_database: utf32
+  AuroraRDSInstanceParameterGroup:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Description: Aurora RDS DB Instance Parameter Group.
+      Family: aurora-mysql5.7
+      Parameters:
+        sql_mode: IGNORE_SPACE
+        max_connections: 100
+        wait_timeout: 900
+        interactive_timeout: 900
+  AuroraRDSCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      MasterUsername: ${self:custom.AURORA.USERNAME}
+      MasterUserPassword: ${self:custom.AURORA.PASSWORD}
+      DBSubnetGroupName:
+        Ref: AuroraSubnetGroup
+      Engine: aurora-mysql
+      EngineVersion: 5.7
+      DatabaseName: ${self:custom.AURORA.DATABASE}
+      BackupRetentionPeriod: 3
+      DBClusterParameterGroupName:
+        Ref: AuroraRDSClusterParameterGroup
+      VpcSecurityGroupIds:
+        -
+  AuroraRDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: db.t2.small
+      DBSubnetGroupName:
+        Ref: AuroraSubnetGroup
+      Engine: aurora-mysql
+      EngineVersion: 5.7
+      PubliclyAccessible: false
+      DBParameterGroupName:
+        Ref: AuroraRDSInstanceParameterGroup
+      DBClusterIdentifier:
+        Ref: AuroraRDSCluster

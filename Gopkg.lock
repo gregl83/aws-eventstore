@@ -4,8 +4,8 @@
 [[projects]]
   name = "github.com/aws/aws-lambda-go"
   packages = ["events","lambda","lambda/handlertrace","lambda/messages","lambdacontext"]
-  revision = "c83699c938a36c6d111f9837be9295184efeeb2e"
-  version = "v1.9.0"
+  revision = "08d251dc58f204411d79012fd6f1beefb7107fea"
+  version = "v1.10.0"
 
 [solve-meta]
   analyzer-name = "dep"

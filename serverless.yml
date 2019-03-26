@@ -21,29 +21,30 @@ frameworkVersion: ">=1.28.0 <2.0.0"
 provider:
   name: aws
   runtime: go1.x
-
-# you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
 
 # you can add statements to the Lambda function's IAM Role here
-iamRoleStatements:
-  - Effect: Allow
-    Action:
-      - dynamodb:DescribeTable
-      - dynamodb:Query
-      - dynamodb:Scan
-      - dynamodb:GetItem
-      - dynamodb:PutItem
+#iamRoleStatements:
+#  - Effect: Allow
+#    Action:
+#      - dynamodb:DescribeTable
+#      - dynamodb:Query
+#      - dynamodb:Scan
+#      - dynamodb:GetItem
+#      - dynamodb:PutItem
     # Restrict our IAM role permissions to
     # the specific table for the stage
-    Resource:
-      - "Fn::GetAtt": [ Events, EventSources, Arn ]
+#    Resource:
+#      - "Fn::GetAtt": [ Events, EventSources, Arn ]
 
 # you can define service wide environment variables here
 environment:
-  eventsCollection: ${self:custom.collections.events.name}
-  eventSourcesCollection: ${self:custom.collections.eventSources.name}
+  AURORA_HOST: ${self:custom.AURORA.HOST}
+  AURORA_PORT: ${self:custom.AURORA.PORT}
+  AURORA_DATABASE: ${self:custom.AURORA.DATABASE}
+  AURORA_USERNAME: ${self:custom.AURORA.USERNAME}
+  AURORA_PASSWORD: ${self:custom.AURORA.PASSWORD}
 
 package:
  exclude:
@@ -71,25 +72,21 @@ plugins:
 
 custom:
   stage: ${opt:stage, self:provider.stage}
+  AURORA:
+    HOST:
+      Fn::GetAtt: [AuroraRDSCluster, Endpoint.Address]
+    PORT:
+      Fn::GetAtt: [AuroraRDSCluster, Endpoint.Port]
+    DATABASE: aurora${self:custom.stage}
+    USERNAME: master
+    PASSWORD: password
+    VPC_CIDR: 10
   customDomain:
     domainName: protoblue.com
     stage: ${self:custom.stage}
     basePath: "events"
     createRoute53Record: true
     endpointType: 'regional'
-  collections:
-    events:
-      name: ${self:custom.stage}-events
-      throughputs:
-        prod: 1
-        default: 1
-      throughput: ${self:custom.collections.events.throughputs.${self:custom.stage}, self:custom.collections.events.throughputs.default}
-    eventSources:
-      name: ${self:custom.stage}-eventSources
-      throughputs:
-        prod: 1
-        default: 1
-      throughput: ${self:custom.collections.eventSources.throughputs.${self:custom.stage}, self:custom.collections.eventSources.throughputs.default}
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -127,4 +124,4 @@ custom:
 
 # you can add CloudFormation resource templates here
 resources:
-  - ${file(resources/dynamodb.yml)}
+  - ${file(resources/auroradb.yml)}
