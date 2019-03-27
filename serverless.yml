@@ -53,6 +53,12 @@ package:
    - ./bin/**
 
 functions:
+  migrate:
+    handler: bin/migrate
+    events:
+      - http:
+          path: /migrate
+          method: get
   write:
     handler: bin/write
     events:
