@@ -6,9 +6,9 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 
-	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/github"
+	"github.com/golang-migrate/migrate"
+	_ "github.com/golang-migrate/migrate/database/mysql"
+	_ "github.com/golang-migrate/migrate/source/aws_s3"
 )
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the
@@ -19,7 +19,8 @@ type Response events.APIGatewayProxyResponse
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(request events.APIGatewayProxyRequest) (Response, error) {
-	// todo write to event store
+
+	// fixme sourceUrl and database connection url
 
 	m, err := migrate.New(
 		"github://mattes:personal-access-token@mattes/migrate_test",
