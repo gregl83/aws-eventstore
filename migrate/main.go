@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 
-	"github.com/golang-migrate/migrate"
+	_ "github.com/golang-migrate/migrate"
 	_ "github.com/golang-migrate/migrate/database/mysql"
 	_ "github.com/golang-migrate/migrate/source/aws_s3"
 )
@@ -22,10 +22,10 @@ func Handler(request events.APIGatewayProxyRequest) (Response, error) {
 
 	// fixme sourceUrl and database connection url
 
-	m, err := migrate.New(
-		"github://mattes:personal-access-token@mattes/migrate_test",
-		"postgres://localhost:5432/database?sslmode=enable")
-	m.Steps(2)
+	//m, err := migrate.New(
+	//	"github://mattes:personal-access-token@mattes/migrate_test",
+	//	"postgres://localhost:5432/database?sslmode=enable")
+	//m.Steps(2)
 
 	fmt.Println("Received body: ", request.Body)
 

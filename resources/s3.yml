@@ -1,0 +1,4 @@
+Resources:
+  MigrationsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
