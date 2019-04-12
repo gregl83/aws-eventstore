@@ -1,5 +1,6 @@
 CREATE PROCEDURE add_event(
   sourceId bigint(11),
+  actorId binary(16),
   sourceType varchar(70),
   sourceVersion tinyint(2),
   eventName text(70),
@@ -7,7 +8,7 @@ CREATE PROCEDURE add_event(
 )
   BEGIN
     DECLARE currentVersion tinyint(2);
-	DECLARE eventId bigint(11);
+	  DECLARE eventId bigint(11);
     DECLARE eventVersion tinyint(2);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
       BEGIN
@@ -17,7 +18,7 @@ CREATE PROCEDURE add_event(
     -- event source version must be tinyint using 0 for first event
     IF sourceVersion IS NULL THEN
       SIGNAL SQLSTATE '45000'
-      SET MESSAGE_TEXT = 'Event source version null while trying to add event to the store';
+      SET MESSAGE_TEXT = 'Event Source version null while trying to add Event to the store';
     END IF;
 
     -- get event source version number using source id
@@ -28,7 +29,7 @@ CREATE PROCEDURE add_event(
       WHERE `id` = sourceId;
       IF currentVersion IS NULL THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Event source not found while trying to add event to the store';
+        SET MESSAGE_TEXT = 'Event Source not found while trying to add Event to the store';
       END IF;
     END IF;
 
@@ -37,24 +38,24 @@ CREATE PROCEDURE add_event(
     -- if current version is null this is a new event source (version is 0)
     IF currentVersion IS NULL THEN
     	SET currentVersion = 0;
-    	INSERT INTO `event_sources` (`type`, `version`)
-    	VALUES (sourceType, currentVersion);
+    	INSERT INTO `event_sources` (`actor_id`, `type`, `version`)
+    	VALUES (actorId, sourceType, currentVersion);
       SET sourceId = LAST_INSERT_ID();
     END IF;
 
     -- sanity check event source version against current version
     IF sourceVersion != currentVersion THEN
       SIGNAL SQLSTATE '45000'
-      SET MESSAGE_TEXT = 'Optimistic concurrency error while trying to add event to store';
+      SET MESSAGE_TEXT = 'Optimistic concurrency error while trying to add Event to store';
     END IF;
 
     -- insert new event in events table (consider handling event stream)
-    INSERT INTO `events` (`source_id`, `name`, `version`, `data`)
-    VALUES (sourceId, eventName, currentVersion, eventData);
+    INSERT INTO `events` (`source_id`, `actor_id`, `name`, `version`, `data`)
+    VALUES (sourceId, actorId, eventName, currentVersion, eventData);
 	SET eventId = LAST_INSERT_ID();
 	SET eventVersion = currentVersion;
     -- increment event source version number for next concurrency test
-	set sourceVersion = currentVersion + 1;
+	SET sourceVersion = currentVersion + 1;
     UPDATE `event_sources`
     SET `version` = sourceVersion
     WHERE `id` = sourceId;
