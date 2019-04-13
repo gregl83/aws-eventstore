@@ -3,16 +3,18 @@ package main
 import (
 	"fmt"
 
+	"github.com/gregl83/aws-eventstore/infrastructure/database"
+	"github.com/gregl83/aws-eventstore/infrastructure/filestore"
+
 	"github.com/aws/aws-lambda-go/events"
-	//"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-lambda-go/lambda"
 
 	_ "github.com/golang-migrate/migrate"
 	_ "github.com/golang-migrate/migrate/database/mysql"
 	_ "github.com/golang-migrate/migrate/source/aws_s3"
-	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/golang-migrate/migrate"
+
 	"log"
-	"github.com/aws/aws-lambda-go/lambda"
 )
 
 // Response is of type APIGatewayProxyResponse since we're leveraging the
@@ -25,8 +27,8 @@ type Response events.APIGatewayProxyResponse
 func Handler(request events.APIGatewayProxyRequest) (Response, error) {
 	// fixme sourceUrl and database connection url
 	m, err := migrate.New(
-		"file://migrations",
-		getConnectionURL("root", "password", "127.0.0.1", "events", "3306"))
+		filestore.GetStorageURL("event-store/migrations"),
+		database.GetConnectionURL("root", "password", "127.0.0.1", "events", "3306"))
 
 	if err != nil {
 		log.Fatal(err)
@@ -41,11 +43,9 @@ func Handler(request events.APIGatewayProxyRequest) (Response, error) {
 	return Response{Body: request.Body, StatusCode: 200}, nil
 }
 
+// main starts lambda using Handler
 func main() {
 	lambda.Start(Handler)
 }
 
-// getConnectionUrl returns a formatted connection URL
-func getConnectionURL(username, password, host, database, port string) string {
-	return fmt.Sprintf("mysql://%s:%s@tcp(%s:%s)/%s?parseTime=true", username, password, host, port, database)
-}
+

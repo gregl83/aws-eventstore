@@ -1,15 +1,20 @@
 package main
 
 import (
-	"github.com/aws/aws-lambda-go/events"
 	"log"
+
+	"testing"
+
+	"github.com/aws/aws-lambda-go/events"
 )
 
-func main() {
-	//request events.APIGatewayProxyRequest
-	request := events.APIGatewayProxyRequest{
+func Test(t *testing.T) {
+	// fixme
 
-	};
+	request := events.APIGatewayProxyRequest{
+		// todo - set params
+	}
+
 	response, err := Handler(request)
 
 	if err != nil {
