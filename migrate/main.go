@@ -1,4 +1,4 @@
-package main
+package migrations
 
 import (
 	"fmt"
@@ -34,7 +34,7 @@ type Event struct {
 
 // Response send by lambda handler for a given event
 type Response struct {
-	Body       string `json:"message"`
+	Body       string `json:"body"`
 	StatusCode int    `json:"statusCode"`
 }
 
