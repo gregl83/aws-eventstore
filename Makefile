@@ -1,4 +1,7 @@
-.PHONY: build clean deploy
+.PHONY: test build clean deploy
+
+test:
+	go test -v -cover ./...
 
 build:
 	dep ensure -v
