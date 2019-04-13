@@ -1,5 +1,6 @@
 CREATE PROCEDURE add_event(
   sourceId bigint(11),
+  traceId binary(16),
   actorId binary(16),
   sourceType varchar(70),
   sourceVersion tinyint(2),
@@ -38,8 +39,8 @@ CREATE PROCEDURE add_event(
     -- if current version is null this is a new event source (version is 0)
     IF currentVersion IS NULL THEN
     	SET currentVersion = 0;
-    	INSERT INTO `event_sources` (`actor_id`, `type`, `version`)
-    	VALUES (actorId, sourceType, currentVersion);
+    	INSERT INTO `event_sources` (`trace_id`, `actor_id`, `type`, `version`)
+    	VALUES (traceId, actorId, sourceType, currentVersion);
       SET sourceId = LAST_INSERT_ID();
     END IF;
 
@@ -50,8 +51,8 @@ CREATE PROCEDURE add_event(
     END IF;
 
     -- insert new event in events table (consider handling event stream)
-    INSERT INTO `events` (`source_id`, `actor_id`, `name`, `version`, `data`)
-    VALUES (sourceId, actorId, eventName, currentVersion, eventData);
+    INSERT INTO `events` (`trace_id`, `source_id`, `actor_id`, `name`, `version`, `data`)
+    VALUES (traceId, sourceId, actorId, eventName, currentVersion, eventData);
 	SET eventId = LAST_INSERT_ID();
 	SET eventVersion = currentVersion;
     -- increment event source version number for next concurrency test
@@ -62,5 +63,5 @@ CREATE PROCEDURE add_event(
 
     COMMIT;
 
-    SELECT sourceId, sourceVersion, eventId, eventVersion;
+    SELECT traceId, sourceId, actorId, sourceVersion, eventId, eventVersion;
   END;
