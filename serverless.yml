@@ -40,11 +40,11 @@ provider:
 
 # you can define service wide environment variables here
 environment:
+  S3_MIGRATIONS_PATH: ${self:custom.S3.MIGRATIONS_PATH}
   AURORA_HOST: ${self:custom.AURORA.HOST}
   AURORA_PORT: ${self:custom.AURORA.PORT}
   AURORA_DATABASE: ${self:custom.AURORA.DATABASE}
   AURORA_USERNAME: ${self:custom.AURORA.USERNAME}
-  AURORA_PASSWORD: ${self:custom.AURORA.PASSWORD}
 
 package:
  exclude:
@@ -55,10 +55,6 @@ package:
 functions:
   migrate:
     handler: bin/migrate
-    events:
-      - http:
-          path: /migrate
-          method: get
   write:
     handler: bin/write
     events:
@@ -85,8 +81,10 @@ custom:
       Fn::GetAtt: [AuroraRDSCluster, Endpoint.Port]
     DATABASE: aurora${self:custom.stage}
     USERNAME: master
-    PASSWORD: password
+    PASSWORD: ${file(ssm.js):AURORA_PASSWORD}
     VPC_CIDR: 10
+  S3:
+    MIGRATIONS_PATH: event-store/migrations
   customDomain:
     domainName: protoblue.com
     stage: ${self:custom.stage}

@@ -6,7 +6,6 @@ import (
 	"github.com/gregl83/aws-eventstore/infrastructure/database"
 	"github.com/gregl83/aws-eventstore/infrastructure/filestore"
 
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 
 	_ "github.com/golang-migrate/migrate"
@@ -15,37 +14,55 @@ import (
 	"github.com/golang-migrate/migrate"
 
 	"log"
+	"context"
+	"os"
 )
 
-// Response is of type APIGatewayProxyResponse since we're leveraging the
-// AWS Lambda Proxy Request functionality (default behavior)
-//
-// https://serverless.com/framework/docs/providers/aws/events/apigateway/#lambda-proxy-integration
-type Response events.APIGatewayProxyResponse
+var (
+	S3_MIGRATIONS_PATH = os.Getenv("S3_MIGRATIONS_PATH")
+	AURORA_HOST = os.Getenv("AURORA_HOST")
+	AURORA_PORT = os.Getenv("AURORA_PORT")
+	AURORA_DATABASE = os.Getenv("AURORA_DATABASE")
+	AURORA_USERNAME = os.Getenv("AURORA_USERNAME")
+	AURORA_PASSWORD = "" // todo fetch password using secrets manager
+)
+
+// Event payload processed by lambda handler
+type Event struct {
+	Name string `json:"name"`
+}
+
+// Response send by lambda handler for a given event
+type Response struct {
+	Body       string `json:"message"`
+	StatusCode int    `json:"statusCode"`
+}
+
+//func HandleLambdaEvent(event MyEvent) (MyResponse, error) {
+//	return MyResponse{Message: fmt.Sprintf("%s is %d years old!", event.Name, event.Age)}, nil
+//}
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(request events.APIGatewayProxyRequest) (Response, error) {
+func Handler(ctx context.Context, event Event) (Response, error) {
 	// fixme sourceUrl and database connection url
 	m, err := migrate.New(
-		filestore.GetStorageURL("event-store/migrations"),
-		database.GetConnectionURL("root", "password", "127.0.0.1", "events", "3306"))
+		filestore.GetStorageURL(S3_MIGRATIONS_PATH),
+		database.GetConnectionURL(AURORA_USERNAME, AURORA_PASSWORD, AURORA_HOST, AURORA_DATABASE, AURORA_PORT))
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 
-		return Response{Body: request.Body, StatusCode: 200}, nil
+		return Response{Body: event.Name, StatusCode: 500}, nil
 	}
 
 	m.Up()
 
-	fmt.Println("Received body: ", request.Body)
+	fmt.Println("Received body: ", event.Name)
 
-	return Response{Body: request.Body, StatusCode: 200}, nil
+	return Response{Body: event.Name, StatusCode: 200}, nil
 }
 
 // main starts lambda using Handler
 func main() {
 	lambda.Start(Handler)
 }
-
-

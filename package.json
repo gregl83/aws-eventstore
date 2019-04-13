@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/gregl83/aws-eventstore#readme",
   "devDependencies": {
+    "aws-sdk": "^2.437.0",
     "serverless-domain-manager": "^2.6.10",
     "serverless-offline": "^3.32.2",
     "serverless-sam": "^0.2.0"
