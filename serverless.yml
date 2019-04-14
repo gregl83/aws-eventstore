@@ -128,5 +128,5 @@ custom:
 
 # you can add CloudFormation resource templates here
 resources:
-  - ${file(resources/s3.yml)}
+#  - ${file(resources/s3.yml)}
   - ${file(resources/auroradb.yml)}

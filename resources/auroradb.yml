@@ -4,7 +4,7 @@ Resources:
     Properties:
       DBSubnetGroupDescription: Aurora RDS DB Cluster Subnet Group
       SubnetIds:
-        -
+      -
   AuroraRDSClusterParameterGroup:
     Type: AWS::RDS::DBClusterParameterGroup
     Properties:

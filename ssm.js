@@ -26,11 +26,10 @@ module.exports.AURORA_PASSWORD = () => {
         .promise()
         .then(secret => secret.SecretString)
         .catch(err => {
-            if (err.name === 'ResourceNotFoundException') {
-                const secret = password.generate(passwordConfig);
-                return ssm.createSecret(secretConfig(secret)).promise();
-            } else {
-                console.log(err);
-            }
+            if (err.name !== 'ResourceNotFoundException') return console.log(err);
+
+            const secret = password.generate(passwordConfig);
+
+            return ssm.createSecret(secretConfig(secret)).promise();
         });
 };
